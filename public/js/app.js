@@ -1,9 +1,12 @@
 $(document).ready(function() {
 
+  // Tracks current operation to control table rendering (e.g., delete mode)
+  let currentOperation = null;
+
   // Load table initially
   function loadTable() {
     $.ajax({
-      url: "operations/fetch.php",
+      url: "operations/fetch.php" + (currentOperation === 'delete' ? '?mode=delete' : ''),
       type: "GET",
       success: function(data) {
         $("#tableArea").html(data);
@@ -20,7 +23,10 @@ $(document).ready(function() {
       url: `operations/${operation}.php`,
       type: "GET",
       success: function(res) {
-        $("#operationArea").html(res); // show form
+        $("#operationArea").html(res); // show form or controls
+        // Set current operation and refresh table to reflect mode (e.g., show checkboxes in delete)
+        currentOperation = operation;
+        loadTable();
       }
     });
   });
@@ -39,8 +45,50 @@ $(document).ready(function() {
     $.post(form.attr("action") || `operations/${form.attr("id").replace("Form","")}.php`, form.serialize(), function(res) {
       showMessage(res);        // show message
       $("#operationArea").html(''); // remove form
+      currentOperation = null; // reset mode after operation
       loadTable();             // update table in-place
     });
+  });
+
+  // Bulk delete: handle click on Delete Selected button (available in delete mode UI)
+  $(document).on('click', '#bulkDeleteBtn', function() {
+    const ids = $("#tableArea input.rowCheckbox:checked").map(function(){
+      return $(this).data('id');
+    }).get();
+
+    if (ids.length === 0) {
+      showMessage('Please select at least one record to delete.');
+      return;
+    }
+
+    const btn = $(this);
+    btn.prop('disabled', true).text('Deleting...');
+    $.post('operations/delete.php', { IDS: ids }, function(res) {
+      showMessage(res);
+      $("#operationArea").html('');
+      currentOperation = null; // exit delete mode after action
+      loadTable();
+    }).always(function(){
+      btn.prop('disabled', false).text('Delete Selected');
+    });
+  });
+
+  // Select/Deselect all checkboxes in delete mode
+  $(document).on('change', '#selectAll', function() {
+    const checked = $(this).is(':checked');
+    $("#tableArea input.rowCheckbox").prop('checked', checked);
+  });
+
+  // Keep selectAll in sync when individual checkboxes change
+  $(document).on('change', '#tableArea input.rowCheckbox', function() {
+    const total = $("#tableArea input.rowCheckbox").length;
+    const checked = $("#tableArea input.rowCheckbox:checked").length;
+    $("#selectAll").prop('checked', total > 0 && checked === total);
+    if (!$(this).is(':checked')) {
+      $("#selectAll").prop('indeterminate', checked > 0 && checked < total);
+    } else {
+      $("#selectAll").prop('indeterminate', checked > 0 && checked < total);
+    }
   });
 
 });
