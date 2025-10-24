@@ -5,11 +5,12 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="public/js/app.js"></script>
   <style>
-    body { font-family: Arial; margin: 40px; }
-    select, input, button { margin: 5px; }
-    table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 8px; }
-    table { margin-top: 20px; width: 60%; }
-    .message { color: green; margin: 10px 0; }
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    select, input, button { margin: 5px; padding: 5px; }
+    table { border-collapse: collapse; margin-top: 20px; width: 65%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    .message { margin: 10px 0; color: green; font-weight: bold; }
+    .form-section { margin-top: 20px; } 
   </style>
 </head>
 <body>
@@ -19,57 +20,32 @@
   <select id="operation">
     <option value="insert">Insert</option>
     <option value="update">Update</option>
-    <option value="delete">Delete</option>
   </select>
   <button id="goBtn">Go</button>
 
-  <div id="operationArea"></div> <!-- Form will appear here -->
-  <div id="tableArea"></div>     <!-- Table will appear here -->
-
+  <div class="form-section" id="operationArea"></div>
+  <div id="tableArea"></div>
 </body>
 </html>
 
-
-<?php
-if (isset($_POST['action'])) {
-  switch ($_POST['action']) {
-    case 'insert':
-      include 'operations/insert.php';
-      break;
-    case 'update':
-      include 'operations/update.php';
-      break;
-    case 'delete':
-      include 'operations/delete.php';
-      break;
-    default:
-      echo "<p>Invalid operation.</p>";
-  }
-  exit;
-}
-?>
-
-
-
-<!-- Flow Summary
-    - User selects an operation (insert/update/delete).
-    - index.php switch-case loads respective form dynamically.
-    - AJAX submits to the corresponding operation file.
-    - Table updates dynamically after each operation. 
--->
-
-<!-- crudOperationPHP/
+<!--
+    crudOperationPHP/
+    │
+    ├── index.php
     ├── config/
-    |   └── db.php 
-    |
-    ├── operations/
-    │   ├── insert.php
-    │   ├── update.php
-    │   ├── delete.php
-    │   └── fetch.php
-    |
+    │   └── db.php
+    │
     ├── public/
     │   └── js/
     │       └── app.js
-    └── index.php
+    │
+    ├── operations/
+    │   ├── router.php       ← single entry point for all operations
+    │   ├── fetch.php
+    │   ├── insert.php
+    │   ├── update.php
+    │   ├── delete.php
+    │   └── delete_multiple.php
+    │
+    └── empPhotos (storing photos)
 -->
