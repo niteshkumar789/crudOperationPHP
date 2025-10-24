@@ -58,16 +58,18 @@ if (isset($_POST['action'])) {
     - Table updates dynamically after each operation. 
 -->
 
-<!-- NiteshPHP/
-    ├── index.php
-    ├── public/
-    │   └── js/
-    │       └── app.js
+<!-- crudOperationPHP/
+    ├── config/
+    |   └── db.php 
+    |
     ├── operations/
     │   ├── insert.php
     │   ├── update.php
     │   ├── delete.php
     │   └── fetch.php
-    └── config/
-        └── db.php 
+    |
+    ├── public/
+    │   └── js/
+    │       └── app.js
+    └── index.php
 -->
